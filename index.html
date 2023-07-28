@@ -12,10 +12,54 @@
     <div class="password-generator"><py-script>
         import secrets
         import string
-        
-        caracteres = string.ascii_letters + string.digits + string.punctuation
-        senha = "".join(secrets.choice(caracteres) for _ in range(16))
-                
+
+
+        def gera_senha(tamanho):
+            caracteres_validos = {
+                "uppercase": string.ascii_uppercase,
+                "lowercase": string.ascii_lowercase,
+                "digits": string.digits,
+                "punctuation": string.punctuation.replace("'", "").replace('"', "")
+            }
+
+            senha = ""
+            last_char_type = None
+
+            while len(senha) < tamanho:
+                char_type = secrets.choice(list(caracteres_validos.keys()))
+                char = secrets.choice(caracteres_validos[char_type])
+
+                if char_type != last_char_type and char not in senha:
+                    senha += char
+                    last_char_type = char_type
+
+            return senha
+
+
+        def senha_valida(senha):
+            if len(senha) != len(set(senha)):
+                return False
+
+            for i in range(len(senha) - 1):
+                if senha[i].isupper() and senha[i+1].isupper():
+                    return False
+
+            for i in range(len(senha) - 1):
+                if senha[i].islower() and senha[i+1].islower():
+                    return False
+
+            for i in range(len(senha) - 2):
+                if senha[i].isdigit() and senha[i+1].isdigit() and senha[i+2].isdigit():
+                    return False
+
+            return True
+
+
+        while True:
+            senha = gera_senha(16)
+            if senha_valida(senha):
+                break
+
         print(senha)
     </py-script></div>
 </body>
